@@ -117,8 +117,8 @@ REGISTER_CPU_OPERATOR(PSRoIPool, PSRoIPoolOp<float, CPUContext>);
 REGISTER_CPU_OPERATOR(PSRoIPoolGradient, PSRoIPoolGradientOp<float, CPUContext>);
 
 // Input: X, rois
-// Output case #1: Y, argmaxes (train mode)
-// Output case #2: Y           (test mode)
+// Output case #1: Y, mapping_channel (train mode)
+// Output case #2: Y                  (test mode)
 OPERATOR_SCHEMA(PSRoIPool)
     .NumInputs(2)
     .NumOutputs({1, 2})
@@ -137,7 +137,7 @@ OPERATOR_SCHEMA(PSRoIPool)
             vector<int>({num_rois, num_channels, group_size, group_size}),
             X.data_type());
 
-        bool is_test = helper.GetSingleArgument<int>("is_test", 0);
+        bool is_test = (bool) helper.GetSingleArgument<int>("is_test", 0);
         if (!is_test) {
           TensorShape mapping_channel = Y;
           mapping_channel.set_data_type(TensorProto_DataType_INT32);
@@ -155,7 +155,7 @@ Depending on the mode, there are multiple output cases:
 )DOC")
     .Arg(
         "is_test",
-        "If set, run in test mode and skip computation of argmaxes (used for "
+        "If set, run in test mode and skip computation of mapping_channel (used for "
         "gradient computation). Only one output tensor is produced. "
         "(Default: false).")
     .Arg("order", "MC StorageOrder string (Default: \"NCHW\").")

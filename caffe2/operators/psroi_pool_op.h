@@ -13,13 +13,13 @@ class PSRoIPoolOp final : public Operator<Context> {
  public:
   PSRoIPoolOp(const OperatorDef& operator_def, Workspace* ws)
       : Operator<Context>(operator_def, ws),
-        is_test_(OperatorBase::GetSingleArgument<int>("is_test", 0)),
+        is_test_((bool) OperatorBase::GetSingleArgument<int>("is_test", 0)),
         order_(StringToStorageOrder(
             OperatorBase::GetSingleArgument<string>("order", "NCHW"))),
         output_dim_(OperatorBase::GetSingleArgument<int>("output_dim", 1)),
         group_size_(OperatorBase::GetSingleArgument<int>("group_size", 1)),
         spatial_scale_(
-            OperatorBase::GetSingleArgument<float>("spatial_scale", 1.)) {
+            OperatorBase::GetSingleArgument<float>("spatial_scale", 1.f)) {
     CAFFE_ENFORCE(
         (is_test_ && OutputSize() == 1) || (!is_test_ && OutputSize() == 2),
         "Output size mismatch.");
@@ -50,7 +50,7 @@ class PSRoIPoolGradientOp final : public Operator<Context> {
   PSRoIPoolGradientOp(const OperatorDef& def, Workspace* ws)
       : Operator<Context>(def, ws),
         spatial_scale_(
-            OperatorBase::GetSingleArgument<float>("spatial_scale", 1.)),
+            OperatorBase::GetSingleArgument<float>("spatial_scale", 1.f)),
         output_dim_(OperatorBase::GetSingleArgument<int>("output_dim", 1)),
         group_size_(OperatorBase::GetSingleArgument<int>("group_size", 1)),
         order_(StringToStorageOrder(

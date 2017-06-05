@@ -170,7 +170,7 @@ bool PSRoIPoolOp<float, CUDAContext>::RunOnDevice() {
 
   Y->Resize(R.dim32(0), X.dim32(1), pooled_height_, pooled_width_);
   if (!is_test_) {
-    MC->ResizeLike(Y);
+    MC->Resize(R.dim32(0), X.dim32(1), pooled_height_, pooled_width_);
   }
   int output_size = Y->size();
   int* mapping_channel_ptr = is_test_ ? nullptr : MC->mutable_data<int>();
@@ -241,8 +241,8 @@ bool PSRoIPoolGradientOp<float, CUDAContext>::RunOnDevice() {
 
 namespace {
 
-REGISTER_CUDA_OPERATOR(RoIPool, RoIPoolOp<float, CUDAContext>);
-REGISTER_CUDA_OPERATOR(RoIPoolGradient, RoIPoolGradientOp<float, CUDAContext>);
+REGISTER_CUDA_OPERATOR(PSRoIPool, PSRoIPoolOp<float, CUDAContext>);
+REGISTER_CUDA_OPERATOR(PSRoIPoolGradient, PSRoIPoolGradientOp<float, CUDAContext>);
 
 } // namespace
 } // namespace caffe2

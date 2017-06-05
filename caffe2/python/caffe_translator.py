@@ -657,6 +657,28 @@ def TranslateROIPooling(layer, pretrained_blobs, is_test):
     return caffe_op, []
 
 
+@TranslatorRegistry.Register("PSROIPooling")
+def TranslateROIPooling(layer, pretrained_blobs, is_test):
+    caffe_op = BaseTranslate(layer, "PSRoIPool")
+    AddArgument(caffe_op, "order", "NCHW")
+
+    if is_test:
+        AddArgument(caffe_op, "is_test", is_test)
+    else:
+        # Only used for gradient computation
+        caffe_op.output.append(caffe_op.output[0] + '_mapping_channel')
+
+    param = layer.psroi_pooling_param
+    if param.HasField('output_dim'):
+        AddArgument(caffe_op, 'output_dim', param.pooled_h)
+    if param.HasField('group_size'):
+        AddArgument(caffe_op, 'group_size', param.pooled_w)
+    if param.HasField('spatial_scale'):
+        AddArgument(caffe_op, 'spatial_scale', param.spatial_scale)
+
+    return caffe_op, []
+
+
 @TranslatorRegistry.Register("PReLU")
 def TranslatePRelu(layer, pretrained_blobs, is_test):
     caffe_op = BaseTranslate(layer, "PRelu")
